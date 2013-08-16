@@ -1,0 +1,21 @@
+{
+    "name": "Chrome History Log",
+    "version": "0.0.1",
+    "manifest_version": 2,
+    "description": "Google Chrome Extension to allow a user to create a log of their activity.",
+    "icons": {
+        "16" : "script-small-16.png",
+        "48" : "script-small-16.png",
+        "128" : "script-small-16.png"
+    },
+    "permissions": [
+        "tabs",
+        "http://*/*",
+        "https://*/*"
+    ],
+    "browser_action": {
+        "default_icon": "script-small-16.png", 
+        "default_title": "Chrome History Log",
+        "default_popup": "popup.html"
+    }
+}
