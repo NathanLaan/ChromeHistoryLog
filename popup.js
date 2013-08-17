@@ -14,6 +14,9 @@ $(document).ready(function() {
 
 	var enabled = false;
 	
+	chrome.runtime.sendMessage({message: "getLogEntries"}, function(response) {
+		console.log(response.farewell);
+	});
 	
 	$.fn.appendText = function(txt) {
 	   return this.each(function(){
@@ -51,12 +54,21 @@ $(document).ready(function() {
 	//
 
     $("#startButton").click(function() {
-		enabled = true;
-			console.log("ENABLED");
+		chrome.runtime.sendMessage({enabled: true}, function(response) {
+			console.log(response.farewell);
+		});
     });
 
     $("#stopButton").click(function() {
-		enabled = false;
+		chrome.runtime.sendMessage({enabled: false}, function(response) {
+			console.log(response.farewell);
+		});
+    });
+
+    $("#getLogButton").click(function() {
+		chrome.runtime.sendMessage({message: "getLogEntries"}, function(response) {
+			console.log(response.logEntries);
+		});
     });
 
     $("#noteButton").click(function() {

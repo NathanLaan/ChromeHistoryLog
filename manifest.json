@@ -17,5 +17,8 @@
         "default_icon": "script-small-16.png", 
         "default_title": "Chrome History Log",
         "default_popup": "popup.html"
-    }
+    },
+	"background": {
+		"scripts": ["background.js"]
+	}
 }
