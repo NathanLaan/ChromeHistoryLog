@@ -68,6 +68,10 @@ $(document).ready(function() {
     $("#getLogButton").click(function() {
 		chrome.runtime.sendMessage({message: "getLogEntries"}, function(response) {
 			console.log(response.logEntries);
+			for(var i=0;i<response.logEntries.length;i++){
+				$("#outputText").appendText(response.logEntries[i]);
+				$("#outputText").appendText("\n");
+			}
 		});
     });
 

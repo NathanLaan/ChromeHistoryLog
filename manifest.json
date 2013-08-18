@@ -9,7 +9,9 @@
         "128" : "script-small-16.png"
     },
     "permissions": [
+		"storage",
         "tabs",
+        "background",
         "http://*/*",
         "https://*/*"
     ],
