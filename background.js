@@ -4,6 +4,9 @@ var enabled = false;
 
 var logEntryList = new Array();
 
+var currentSession;
+
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	console.log(
 		"SENDER - " 
@@ -20,6 +23,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	}
 	
 });
+
+function saveLogEntry(var logEntry){
+	logEntryList[logEntryList.length] = s;
+}
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 	if(enabled){
@@ -40,7 +47,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 				s+= " URL: " + tab.url;
 			}
 			//s += "\n";
-			logEntryList[logEntryList.length] = s;
+			saveLogEntry(s);
 			//alert(s);
 			//console.log(s);
 			//$("#outputText").appendText(s);
