@@ -7,25 +7,42 @@ var logEntryList = new Array();
 var currentSession;
 
 
+function newSession(){
+	currentSession = "";
+}
+
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	console.log(
 		"SENDER - " 
 		+ (sender.tab ? "Content Script: " + sender.tab.url : "Extension")
-		+ "  ENABLED: " + (request.enabled == null ?  + "null" : request.enabled));
-	if (request.enabled != null) {
-		enabled = request.enabled;
-	}else{
+		+ "  ENABLED: " + (request.action == null ?  + "null" : request.action));
+
+	
+	if(request.action == "NewSession"){
+		newSession();
+	}
+	if(request.action == "StartSession"){
+		newSession();
+	}
+	if(request.action == "StopSession"){
+		newSession();
 		enabled = false;
 	}
+	if(request.action == "NewSession"){
+		if(currentSession == null || currentSession == ""){
+			newSession();
+			enabled = true;
+		}
+	}
 	
-	if(request.message == "getLogEntries"){
+	if(request.action == "GetLogEntries"){
 		sendResponse({logEntries: logEntryList});
 	}
 	
 });
 
-function saveLogEntry(var logEntry){
-	logEntryList[logEntryList.length] = s;
+function saveLogEntry(logEntry){
+	logEntryList[logEntryList.length] = logEntry;
 }
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
@@ -36,7 +53,6 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 		//favIconUrl ( optional string ) The tab's new favicon URL.
 		//console.log("TAB: " + tabId);
 		//console.log(changeInfo);
-		
 		
 		chrome.tabs.get(tabId, function(tab){
 			var s = (new Date()).toString("yyyy/MM/dd-hh:mm");
