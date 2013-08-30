@@ -39,9 +39,10 @@ $(document).ready(function() {
 
     $("#getLogButton").click(function() {
 		chrome.runtime.sendMessage({action: "GetLogEntries"}, function(response) {
-			console.log(response.logEntries);
-			for(var i=0;i<response.logEntries.length;i++){
-				$("#outputText").appendText(response.logEntries[i]);
+			console.log("LEL");
+			console.log(response.logEntryList);
+			for(var i=0;i<response.logEntryList.length;i++){
+				$("#outputText").appendText(response.logEntryList[i]);
 				$("#outputText").appendText("\n");
 			}
 		});
@@ -54,8 +55,15 @@ $(document).ready(function() {
 		chrome.tabs.query({'active': true, 'currentWindow':true}, function(tabs) {
 			if( tabs !== null && tabs.length > 0){
 				//tabs[0].id
-				//tabs[0].title
+				//bs[0].title
 				//tabs[0].url
+				
+				var note = prompt("Enter Note for page '" + tabs[0].title + "':");
+				if(note){
+					alert(note);
+				}else{
+					alert("No note specified");
+				}
 			}
 		});
     });

@@ -22,5 +22,9 @@
     },
 	"background": {
 		"scripts": ["background.js"]
+		/* , */
+		
+		/* http://developer.chrome.com/extensions/event_pages.html */
+		/* "persistent": false */
 	}
 }
