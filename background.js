@@ -3,12 +3,18 @@ var enabled = false;
 
 
 var logEntryList = new Array();
+var sessionList = new Array();
 
 var currentSession;
 
 
 function newSession(){
-	currentSession = "";
+			var s = (new Date()).toString("yyyy/MM/dd-hh:mm");
+	currentSession = "Session " + s;
+	console.log(currentSession);
+
+	sessionList[sessionList.length] = currentSession;
+	
 }
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -43,6 +49,10 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 function saveLogEntry(logEntry){
 	logEntryList[logEntryList.length] = logEntry;
+
+	chrome.storage.local.set({'sessions':sessionList},function(){
+		// TODO: debug
+	});
 }
 
 chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
