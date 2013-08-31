@@ -13,7 +13,9 @@
         "tabs",
         "background",
         "http://*/*",
-        "https://*/*"
+        "https://*/*",
+        "notifications",
+        "idle"
     ],
     "browser_action": {
         "default_icon": "script-small-16.png", 
@@ -21,7 +23,7 @@
         "default_popup": "popup.html"
     },
 	"background": {
-		"scripts": ["background.js"]
+		"scripts": ["Session.js", "SessionList.js", "LogEntry.js", "background.js"]
 		/* , */
 		
 		/* http://developer.chrome.com/extensions/event_pages.html */

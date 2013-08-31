@@ -4,6 +4,40 @@
 //
 
 
+//
+//
+//
+//
+//
+function dateTimeNow(){
+	var dt = new Date();
+	var yyyy = dt.getFullYear().toString();
+	var mm = dt.getMonth().toString();
+	var dd = dt.getDate().toString();
+	var hh = dt.getHours().toString();
+	var mn = dt.getMinutes().toString();
+	var ss = dt.getSeconds().toString();
+	
+	if(mm.length < 2){
+		mm = "0" + mm;
+	}
+	if(dd.length < 2){
+		dd = "0" + dd;
+	}
+	if(hh.length < 2){
+		hh = "0" + hh;
+	}
+	if(mn.length < 2){
+		mn = "0" + mn;
+	}
+	if(ss.length < 2){
+		ss = "0" + ss;
+	}
+	
+	return yyyy + "-" + mm + "-" + dd + "-" + hh + ":" + mn + ":" + ss;
+}
+
+
 function chlog_parseUrl( url ) {
     var a = document.createElement('a');
     a.href = url;
@@ -19,12 +53,20 @@ $(document).ready(function() {
 	};
 	
 	//
-	// TODO: Add listener for Google Chrome searches...
+	// TODO: load session list
 	//
 
-    $("#newSessionButton").click(function() {
-		chrome.runtime.sendMessage({action: "NewSession"}, function(response) {
+    $("#debugButton").click(function() {
+		chrome.runtime.sendMessage({action: "DEBUG"}, function(response) {
 		});
+    });
+
+    $("#newSessionButton").click(function() {
+		var name = prompt("New Session Name:", "Session_" + dateTimeNow());
+		if(name !== null){
+			chrome.runtime.sendMessage({action: "NewSession", sessionName: name}, function(response) {
+			});
+		}
     });
 
     $("#startSessionButton").click(function() {
@@ -48,24 +90,35 @@ $(document).ready(function() {
 		});
     });
 
-    $("#noteButton").click(function() {
+    $("#addNoteButton").click(function() {
 		//
 		// TODO: Create note on currently selected page
 		//
 		chrome.tabs.query({'active': true, 'currentWindow':true}, function(tabs) {
 			if( tabs !== null && tabs.length > 0){
-				//tabs[0].id
-				//bs[0].title
-				//tabs[0].url
-				
-				var note = prompt("Enter Note for page '" + tabs[0].title + "':");
-				if(note){
-					alert(note);
+				var noteText = prompt("Enter Note for page '" + tabs[0].title + "':");
+				if(noteText){
+					chrome.runtime.sendMessage({
+						action: "AddNote", 
+						note: noteText, 
+						tabID: tabs[0].id, 
+						tabTitle: tabs[0].title, 
+						tabURL: tabs[0].url}, function(response) {
+							// TODO: debug
+					});
 				}else{
 					alert("No note specified");
 				}
 			}
 		});
+    });
+
+    $('#clearButton').click(function() {
+    	if(confirm("Delete all ChromeHistoryLog data?")){
+	    	chrome.storage.local.clear(function(){
+	    		alert("Cleared!");
+	    	});
+	    }
     });
 
 });

@@ -1,91 +1,24 @@
 <html>
 <head>
 <title>CHL</title>
-	<style>
-		body {
-		min-width:350px;
-		overflow-x:hidden;
-		}
-.btn {
-  display: inline-block;
-  *display: inline;
-  padding: 4px 14px;
-  margin-bottom: 0;
-  *margin-left: .3em;
-  font-size: 14px;
-  line-height: 20px;
-  *line-height: 20px;
-  color: #333333;
-  text-decoration: none;
-  text-align: center;
-  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
-  vertical-align: middle;
-  cursor: pointer;
-  background-color: #f5f5f5;
-  *background-color: #e6e6e6;
-  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#ffffff), to(#e6e6e6));
-  background-image: -webkit-linear-gradient(top, #ffffff, #e6e6e6);
-  background-image: -o-linear-gradient(top, #ffffff, #e6e6e6);
-  background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
-  background-image: -moz-linear-gradient(top, #ffffff, #e6e6e6);
-  background-repeat: repeat-x;
-  border: 1px solid #bbbbbb;
-  *border: 0;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
-  border-bottom-color: #a2a2a2;
-  -webkit-border-radius: 4px;
-     -moz-border-radius: 4px;
-          border-radius: 4px;
-  filter: progid:dximagetransform.microsoft.gradient(startColorstr='#ffffffff', endColorstr='#ffe6e6e6', GradientType=0);
-  filter: progid:dximagetransform.microsoft.gradient(enabled=false);
-  *zoom: 1;
-  -webkit-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-     -moz-box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-          box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
-}
-.btn:hover,
-.btn:active,
-.btn.active,
-.btn.disabled,
-.btn[disabled] {
-  color: #333333;
-  background-color: #e6e6e6;
-  *background-color: #d9d9d9;
-}
-
-.btn:active,
-.btn.active {
-  background-color: #cccccc \9;
-}
-.btn:hover {
-  color: #333333;
-  text-decoration: none;
-  background-color: #e6e6e6;
-  *background-color: #d9d9d9;
-
-  background-position: 0 -15px;
-  -webkit-transition: background-position 0.1s linear;
-     -moz-transition: background-position 0.1s linear;
-       -o-transition: background-position 0.1s linear;
-          transition: background-position 0.1s linear;
-}
-	</style>
+<link href="bootstrap.css" rel="stylesheet">
 </head>
 <body>
 	<div id="popup">
-        <a href="#" id="newSessionButton" class="btn">New Session</a>
-        <a href="#" id="startSessionButton" class="btn">Start Logging</a>
-		<a href="#" id="stopSessionButton" class="btn">Stop Logging</a>
-		<a href="#" id="noteButton" class="btn">Add Note</a>
-        <br/>
-		<br/><select class="span6" id="sessionList" style="width:95%"></select>
-        <br/>
-        <br/>
-		<a href="#" id="getLogButton" class="btn">Get Log</a>
+    <br/>
+    <a href="#" id="newSessionButton" class="btn btn-primary">New Session</a>
+    <a href="#" id="startSessionButton" class="btn btn-success">Start Logging</a>
+		<a href="#" id="stopSessionButton" class="btn btn-warning">Stop Logging</a>
+		<br/>
+		<select class="span6" id="sessionList" style="width:95%"></select>
+    <a href="#" id="addNoteButton" class="btn btn-info">Add Note</a>
+    <a href="#" id="getLogButton" class="btn btn-success">Get Log</a>
+    <a href="#" id="deleteSessionButton" class="btn btn-danger">Delete Session</a>
+    <a href="#" id="clearButton" class="btn btn-danger">Clear All Data</a>
 		<br/><textarea class="span6" id="outputText" cols="80" rows="20" wrap="off"></textarea>
+    <br/><a href="#" id="debugButton" class="btn btn-info">DEBUG</a>
 	</div>
 	<script src='jquery-1.6.1.min.js'></script>
-    <script src='popup.js'></script>
+  <script src='popup.js'></script>
 </body>
 </html>
