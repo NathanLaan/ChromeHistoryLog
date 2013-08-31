@@ -169,6 +169,33 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 
+
+//
+//
+// TODO: Log CTRL-F in-page searches
+//
+// http://stackoverflow.com/questions/14529486/chrome-extension-how-to-bind-hook-to-the-browsers-search-invoked-event
+//
+// https://developer.chrome.com/extensions/commands.html
+//
+//
+
+
+
+
+//
+//
+//
+//
+//
+chrome.omnibox.onInputEntered.addListener(function(text, disposition){
+	//
+	// TODO: log event
+	//
+});
+
+
+
 //
 //
 //
