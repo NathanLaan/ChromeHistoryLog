@@ -51,6 +51,26 @@ $(document).ready(function() {
 		   this.value += txt;
 	   });
 	};
+
+	//
+	// get and load data
+	//
+	chrome.runtime.sendMessage({action: "GetData"}, function(result) {
+		console.log(result);
+		if(result !== undefined && result.sessionList !== undefined){
+			for(var i=0;i<result.sessionList.list.length;i++){
+				console.log("i: " + i);
+				$("#outputText").appendText(result.sessionList.list[i].name);
+				$("#outputText").appendText("\n");
+				$('#sessionList')
+					.append($("<option></option>")
+					.attr("value",result.sessionList.list[i].name)
+					.text(result.sessionList.list[i].name)); 
+			}
+		}else{
+			alert("Error retrieving data");
+		}
+	});
 	
 	//
 	// TODO: load session list

@@ -150,6 +150,20 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 			}
 		});
 	}
+	if(request.action === "GetData"){
+		chrome.storage.local.get('SessionListKey', function(result){
+			if(result.SessionListKey !== undefined){
+				console.log("-------GetData()--GOOD-------");
+				sendResponse({sessionList: result.SessionListKey});
+			}else{
+				console.log("-------GetData()--ERROR:List-Not-Found-------");
+				//
+				// TODO: need to handle error messages on the other end
+				//
+				sendReponse({errorMessage: "List not found"})
+			}
+		});
+	}
 	
 	return true;
 });
@@ -169,10 +183,10 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 	//console.log(changeInfo);
 
 	chrome.storage.local.get('SessionListKey', function(result){
-		console.log("-------onUpdated()--GET-------");
-		console.log(result);
+		//console.log("-------onUpdated()--GET-------");
+		//console.log(result);
 		if(result.SessionListKey !== undefined){
-			console.log("-------onUpdated()--NOT-undefined-------");
+			//console.log("-------onUpdated()--NOT-undefined-------");
 			var sessionList = result.SessionListKey;
 			if(sessionList.loggingEnabled){
 			console.log("-------onUpdated()--LoggingEnabled-------");
@@ -186,7 +200,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 				if(changeInfo != null && changeInfo.status != null){
 					logEntry.contents += ", STATUS=" + changeInfo.status;
 				}
-				console.log("LOG-ENTRY: " + logEntry.contents);
+				//console.log("LOG-ENTRY: " + logEntry.contents);
 
 				//
 				// TODO: get current session, add logEntry to session
@@ -194,7 +208,7 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 				for(var i=0;i<sessionList.list.length;i++){
 					if(sessionList.list[i] !== undefined){
 						if(sessionList.list[i].name === sessionList.currentSession){
-							console.log("-------onUpdated()--FOUND-------");
+							//console.log("-------onUpdated()--FOUND-------");
 							sessionList.list[i].list[sessionList.list[i].list.length] = logEntry;
 							break;
 						}
