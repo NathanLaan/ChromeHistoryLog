@@ -2,10 +2,10 @@
 
 
 var LogEntry = function(){
-	this.val = "DEFAULT";
+	this.contents = "DEFAULT";
 
 	function ToString(){
-		return this.val;
+		return this.contents;
 	}
 	
 }

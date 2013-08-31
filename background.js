@@ -1,24 +1,22 @@
 //
 // chrome.storage.local Keys:
 //
-// LoggingEnabled
-// SessionCurrent
-// CHLSessionList
+// SessionListKey
 //
 
 
 //
 // INITIALIZATION
 //
-chrome.storage.local.get('CHLSessionList', function(result){	
+chrome.storage.local.get('SessionListKey', function(result){	
 	console.log("-------INITIALIZATION--result-------");
 	console.log(result);
 	
-	if(result.CHLSessionList === undefined){
+	if(result.SessionListKey === undefined){
 		console.log("-------INITIALIZATION--undefined-------");
 		var sessionList = new SessionList();
 		console.log(sessionList);
-		chrome.storage.local.set({'CHLSessionList':sessionList},function(){
+		chrome.storage.local.set({'SessionListKey':sessionList},function(){
 			console.log("-------INITIALIZATION--SET-------");
 			console.log(sessionList);
 		});
@@ -32,9 +30,21 @@ chrome.storage.local.get('CHLSessionList', function(result){
 //
 //
 //
-function setEnabled(e){
-	chrome.storage.local.set({'LoggingEnabled' : e},function(){
-		// TODO: debug
+function setEnabled(enabled){
+	chrome.storage.local.get('SessionListKey', function(result){	
+		console.log("-------setEnabled()--GET-------");
+		console.log(result);
+		
+		if(result.SessionListKey !== undefined){
+			var sessionList = result.SessionListKey;
+			sessionList.loggingEnabled = enabled;
+			chrome.storage.local.set({'SessionListKey':sessionList},function(){
+				console.log("-------setEnabled()--SET-------");
+				console.log(sessionList);
+			});
+		}else{
+			// TODO: debug
+		}
 	});
 }
 
@@ -48,69 +58,38 @@ function newSession(sessionName){
 	if(sessionName === null){
 		sessionName = "Session_" + dateTimeNow();
 	}
-	chrome.storage.local.set({'SessionCurrent' : sessionName},function(){
-		// TODO: debug
-		console.log("--newSession()--SessionName: " + sessionName);
-
-
-		chrome.storage.local.get('SessionList', function(result){
-			//console.log("LoggingEnabled: " + result.SessionList);
-			
-		console.log("--newSession()-getSessionList()--result--");
-		console.log(result);
-
-			// create the session list.
-			// if the get return NULL, we now have a default list.
-			var sessionList = new Array();
-			
-			if(result.SessionList != null){
-				sessionList = result.SessionList;
+	chrome.storage.local.get('SessionListKey', function(result){		
+		if(result.SessionListKey !== undefined){
+			var sessionList = result.SessionListKey;
+			var found = false;
+			for(var i=0;i<sessionList.list.length;i++){
+				if(sessionList.list[i] !== undefined){
+					if(sessionList.list[i].name === sessionName){
+						found = true;
+						break;
+					}
+				}
 			}
-			sessionList[sessionName] = new Array();
-			
-			chrome.storage.local.set({'SessionList':sessionList},function(){
-				// TODO: debug
-			});
-			
-			console.log('--newSession()--sessionList--');
-			console.log(sessionList);
-		});
-
+			if(found){
+				//
+				// TODO: need to handle error condition and notify user...
+				//
+				console.log("-------DUPLICATE-SESSION-NAME-------")
+				return false;
+			}else{
+				var session = new Session();
+				session.name = sessionName;
+				sessionList.currentSession = sessionName;
+				sessionList.list[sessionList.list.length] = session;
+				chrome.storage.local.set({'SessionListKey':sessionList},function(){
+					console.log("-------newSession()--SET-------");
+					console.log(sessionList);
+				});
+			}
+		}else{
+			// TODO: debug
+		}
 	});
-}
-
-
-//
-//
-//
-//
-//
-function dateTimeNow(){
-	var dt = new Date();
-	var yyyy = dt.getFullYear().toString();
-	var mm = dt.getMonth().toString();
-	var dd = dt.getDate().toString();
-	var hh = dt.getHours().toString();
-	var mn = dt.getMinutes().toString();
-	var ss = dt.getSeconds().toString();
-	
-	if(mm.length < 2){
-		mm = "0" + mm;
-	}
-	if(dd.length < 2){
-		dd = "0" + dd;
-	}
-	if(hh.length < 2){
-		hh = "0" + hh;
-	}
-	if(mn.length < 2){
-		mn = "0" + mn;
-	}
-	if(ss.length < 2){
-		ss = "0" + ss;
-	}
-	
-	return yyyy + "-" + mm + "-" + dd + "-" + hh + ":" + mn + ":" + ss;
 }
 
 
@@ -127,6 +106,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 	
 	if(request.action == "DEBUG"){
+		chrome.storage.local.get('SessionListKey', function(result){	
+			console.log("-------DEBUG-------");
+			console.log(result);
+			console.log("-------DEBUG-------");
+		});
 	}
 	if(request.action == "StartSession"){
 		setEnabled(true);
@@ -155,23 +139,15 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	}
 	
 	if(request.action == "GetLogEntries"){
-		// get log entries for specified session
-		chrome.storage.local.get('SessionCurrent', function(r1){
-					console.log("--r1--");
-					console.log(r1);
-			chrome.storage.local.get('SessionList', function(r2){
-					console.log("--r2--");
-					console.log(r2);
-				if(r2 !== null && r2.SessionList !== null){
-					console.log("--NOT-NULL--");
-					var list = r2.SessionList[r1.SessionCurrent];
-					console.log("--LIST--");
-					console.log(list);
-					sendResponse({logEntryList: list});
-				}else{
-					// TODO: debug
-				}
-			});
+		chrome.storage.local.get('SessionListKey', function(result){
+			if(result.SessionListKey !== undefined){
+				sendResponse({logEntryList: result.SessionListKey});
+			}else{
+				//
+				// TODO: need to handle error messages on the other end
+				//
+				sendReponse({errorMessage: "List not found"})
+			}
 		});
 	}
 	
@@ -192,27 +168,56 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 	//console.log("TAB: " + tabId);
 	//console.log(changeInfo);
 
-	chrome.storage.local.get('LoggingEnabled', function(result){
-		console.log("LoggingEnabled: " + result.LoggingEnabled);
-		if(result.LoggingEnabled){
-			chrome.storage.local.get('SessionCurrent', function(result){
-				if(result.SessionCurrent != null){
-					var logEntry = "DATETIME=" + dateTimeNow();
-					logEntry += ", TAB=" + tabId;
-					if(tab != null){
-						logEntry += ", TITLE=" + tab.title;
-						logEntry += ", URL=" + tab.url;
-					}
-					if(changeInfo != null && changeInfo.status != null){
-						logEntry += ", STATUS=" + changeInfo.status;
-					}
-					console.log("LOG-ENTRY: " + logEntry);
-					
-					addLogEntry(result.SessionCurrent, logEntry);
+	chrome.storage.local.get('SessionListKey', function(result){
+		console.log("-------onUpdated()--GET-------");
+		console.log(result);
+		if(result.SessionListKey !== undefined){
+			console.log("-------onUpdated()--NOT-undefined-------");
+			var sessionList = result.SessionListKey;
+			if(sessionList.loggingEnabled){
+			console.log("-------onUpdated()--LoggingEnabled-------");
+				var logEntry = new LogEntry();
+				logEntry.contents = "DATETIME=" + dateTimeNow();
+				logEntry.contents += ", TAB=" + tabId;
+				if(tab != null){
+					logEntry.contents += ", TITLE=" + tab.title;
+					logEntry.contents += ", URL=" + tab.url;
 				}
-			});
+				if(changeInfo != null && changeInfo.status != null){
+					logEntry.contents += ", STATUS=" + changeInfo.status;
+				}
+				console.log("LOG-ENTRY: " + logEntry.contents);
+
+				//
+				// TODO: get current session, add logEntry to session
+				//
+				for(var i=0;i<sessionList.list.length;i++){
+					if(sessionList.list[i] !== undefined){
+						if(sessionList.list[i].name === sessionList.currentSession){
+							console.log("-------onUpdated()--FOUND-------");
+							sessionList.list[i].list[sessionList.list[i].list.length] = logEntry;
+							break;
+						}
+					}
+				}
+
+				chrome.storage.local.set({'SessionListKey':sessionList},function(){
+					console.log("-------onUpdated()--SET-------");
+					console.log(result);
+				});
+
+				//
+				// SET
+				//
+
+			}
+		}else{
+			//
+			// TODO: error handling
+			//
 		}
 	});
+
 });
 
 

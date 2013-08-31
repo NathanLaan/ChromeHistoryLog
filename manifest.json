@@ -23,7 +23,7 @@
         "default_popup": "popup.html"
     },
 	"background": {
-		"scripts": ["Session.js", "SessionList.js", "LogEntry.js", "background.js"]
+		"scripts": ["util.js", "Session.js", "SessionList.js", "LogEntry.js", "background.js"]
 		/* , */
 		
 		/* http://developer.chrome.com/extensions/event_pages.html */
