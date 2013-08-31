@@ -52,21 +52,39 @@ $(document).ready(function() {
 	   });
 	};
 
+	$("#sessionList").change(function () {
+		$("#outputText").val('');
+		var s = $("#sessionList option:selected")[0].text;
+		chrome.runtime.sendMessage({action: "GetData"}, function(result) {
+			if(result !== undefined && result.sessionList !== undefined){
+				for(var i=0;i<result.sessionList.list.length;i++){
+					if(s === result.sessionList.list[i].name){
+						$("#outputText").appendText(result.sessionList.list[i].name);
+						$("#outputText").appendText("\n");
+					}
+					console.log("i: " + i);
+				}
+			}else{
+				alert("Error retrieving data");
+			}
+		});
+	});
+
 	//
 	// get and load data
 	//
 	chrome.runtime.sendMessage({action: "GetData"}, function(result) {
 		console.log(result);
 		if(result !== undefined && result.sessionList !== undefined){
+			$("#sessionList").empty();
 			for(var i=0;i<result.sessionList.list.length;i++){
-				console.log("i: " + i);
-				$("#outputText").appendText(result.sessionList.list[i].name);
-				$("#outputText").appendText("\n");
 				$('#sessionList')
 					.append($("<option></option>")
 					.attr("value",result.sessionList.list[i].name)
 					.text(result.sessionList.list[i].name)); 
 			}
+			// trigger the change() event to load the initial data
+			$("#sessionList").change();
 		}else{
 			alert("Error retrieving data");
 		}
