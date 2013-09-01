@@ -78,10 +78,17 @@ $(document).ready(function() {
 		if(result !== undefined && result.sessionList !== undefined){
 			$("#sessionList").empty();
 			for(var i=0;i<result.sessionList.list.length;i++){
-				$('#sessionList')
-					.append($("<option></option>")
-					.attr("value",result.sessionList.list[i].name)
-					.text(result.sessionList.list[i].name)); 
+				if(result.sessionList.list[i].name === result.sessionList.currentSession){
+					$('#sessionList')
+						.append($("<option selected></option>")
+						.attr("value",result.sessionList.list[i].name)
+						.text(result.sessionList.list[i].name));
+				}else{
+					$('#sessionList')
+						.append($("<option></option>")
+						.attr("value",result.sessionList.list[i].name)
+						.text(result.sessionList.list[i].name));
+				} 
 			}
 			// trigger the change() event to load the initial data
 			$("#sessionList").change();
@@ -117,7 +124,8 @@ $(document).ready(function() {
 		});
     });
 
-    $("#getLogButton").click(function() {
+	/*
+	$("#getLogButton").click(function() {
 		chrome.runtime.sendMessage({action: "GetLogEntries"}, function(response) {
 			console.log("LEL");
 			console.log(response.logEntryList);
@@ -127,6 +135,7 @@ $(document).ready(function() {
 			}
 		});
     });
+	*/
 
     $("#addNoteButton").click(function() {
 		//

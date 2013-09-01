@@ -123,19 +123,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		newSession(request.sessionName);
 	}
 	if(request.action == "AddNote"){
-		var logEntry = "DATETIME=" + dateTimeNow();
-		logEntry += ", TAB=" + request.tabID;
-		logEntry += ", TITLE=" + request.tabTitle;
-		logEntry += ", URL=" + request.tabURL;
-		logEntry += ", NOTE=" + request.note;
-
-		console.log("NOTE-ENTRY: " + logEntry);
-		
-		chrome.storage.local.get('SessionCurrent', function(result){
-			if(result.SessionCurrent != null){
-				addLogEntry(result.SessionCurrent, logEntry);
-			}
-		});
+	    chrome.tabs.query({'active': true, 'currentWindow':true}, function(tabs) {
+	        if( tabs !== null && tabs.length > 0){
+				log(tabs[0], tabs[0].id, tabs[0].status, request.note);
+	        }
+	    });
 	}
 	
 	if(request.action == "GetLogEntries"){
@@ -186,52 +178,30 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 //
 //
 //
-//
-//
-chrome.omnibox.onInputEntered.addListener(function(text, disposition){
+function log(tab, tabID, status, message){
 	//
 	// TODO: log event
 	//
-});
-
-
-
-//
-//
-//
-//
-//
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
-	//status ( optional string ) The status of the tab. Can be either loading or complete.
-	//url ( optional string ) The tab's URL if it has changed.
-	//pinned ( optional boolean ) The tab's new pinned state.
-	//favIconUrl ( optional string ) The tab's new favicon URL.
-	//console.log("TAB: " + tabId);
-	//console.log(changeInfo);
-
 	chrome.storage.local.get('SessionListKey', function(result){
-		//console.log("-------onUpdated()--GET-------");
-		//console.log(result);
 		if(result.SessionListKey !== undefined){
-			//console.log("-------onUpdated()--NOT-undefined-------");
 			var sessionList = result.SessionListKey;
 			if(sessionList.loggingEnabled){
-			console.log("-------onUpdated()--LoggingEnabled-------");
+				//console.log("-------onUpdated()--LoggingEnabled-------");
 				var logEntry = new LogEntry();
 				logEntry.contents = "DATETIME=" + dateTimeNow();
-				logEntry.contents += ", TAB=" + tabId;
-				if(tab != null){
+				logEntry.contents += ", TAB=" + tabID;
+				if(tab !== undefined){
 					logEntry.contents += ", TITLE=" + tab.title;
 					logEntry.contents += ", URL=" + tab.url;
 				}
-				if(changeInfo != null && changeInfo.status != null){
-					logEntry.contents += ", STATUS=" + changeInfo.status;
+				if(status !== undefined){
+					logEntry.contents += ", STATUS=" + status;
 				}
-				//console.log("LOG-ENTRY: " + logEntry.contents);
+				if(message !== undefined){
+					logEntry.contents += ", NOTE=" + message;
+				}
 
-				//
-				// TODO: get current session, add logEntry to session
-				//
+				// add logEntry to session
 				for(var i=0;i<sessionList.list.length;i++){
 					if(sessionList.list[i] !== undefined){
 						if(sessionList.list[i].name === sessionList.currentSession){
@@ -243,13 +213,9 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 				}
 
 				chrome.storage.local.set({'SessionListKey':sessionList},function(){
-					console.log("-------onUpdated()--SET-------");
+					//console.log("-------onUpdated()--SET-------");
 					console.log(result);
 				});
-
-				//
-				// SET
-				//
 
 			}
 		}else{
@@ -258,7 +224,33 @@ chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab){
 			//
 		}
 	});
+}
 
+
+
+//
+//
+//
+//
+//
+chrome.omnibox.onInputEntered.addListener(function(text, disposition){
+	console.log("-------omnibox.onInputEntered()-------");
+    chrome.tabs.query({'active': true, 'currentWindow':true}, function(tabs) {
+        if( tabs !== null && tabs.length > 0){
+			log(tabs[0], tabs[0].id, disposition, " OMNIBOX=" + text);
+        }
+    });
+});
+
+
+
+//
+//
+//
+//
+//
+chrome.tabs.onUpdated.addListener(function(tabID, changeInfo, tab){
+	log(tab, tabID, changeInfo.status, "");
 });
 
 
