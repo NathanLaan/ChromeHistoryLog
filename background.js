@@ -126,6 +126,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	    chrome.tabs.query({'active': true, 'currentWindow':true}, function(tabs) {
 	        if( tabs !== null && tabs.length > 0){
 				log(tabs[0], tabs[0].id, tabs[0].status, request.note);
+				sendResponse({message: "Note added"});
 	        }
 	    });
 	}
@@ -138,7 +139,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				//
 				// TODO: need to handle error messages on the other end
 				//
-				sendReponse({errorMessage: "List not found"})
+				sendResponse({errorMessage: "List not found"});
 			}
 		});
 	}
@@ -152,7 +153,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				//
 				// TODO: need to handle error messages on the other end
 				//
-				sendReponse({errorMessage: "List not found"})
+				sendReponse({errorMessage: "List not found"});
 			}
 		});
 	}
@@ -225,22 +226,6 @@ function log(tab, tabID, status, message){
 		}
 	});
 }
-
-
-
-//
-//
-//
-//
-//
-chrome.omnibox.onInputEntered.addListener(function(text, disposition){
-	console.log("-------omnibox.onInputEntered()-------");
-    chrome.tabs.query({'active': true, 'currentWindow':true}, function(tabs) {
-        if( tabs !== null && tabs.length > 0){
-			log(tabs[0], tabs[0].id, disposition, " OMNIBOX=" + text);
-        }
-    });
-});
 
 
 

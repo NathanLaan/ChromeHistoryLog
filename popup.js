@@ -44,45 +44,15 @@ function chlog_parseUrl( url ) {
     return a;
 }
 
-$(document).ready(function() {
-	
-	$.fn.appendText = function(txt) {
-	   return this.each(function(){
-		   this.value += txt;
-	   });
-	};
 
-	$("#sessionList").change(function () {
-		$("#outputText").val('');
-		var s = $("#sessionList option:selected")[0].text;
-		chrome.runtime.sendMessage({action: "GetData"}, function(result) {
-						console.log("-------GetData-------1-------");
-			if(result !== undefined && result.sessionList !== undefined){
-						console.log("-------GetData-------2-------");
-				for(var i=0;i<result.sessionList.list.length;i++){
-						console.log("-------GetData-------3-------");
-						console.log("s: " + s);
-						console.log("n: " + result.sessionList.list[i].name);
-					if(s === result.sessionList.list[i].name){
-						console.log("-------GetData-------4-------");
-						for(var j=0;j<result.sessionList.list[i].list.length;j++){
-							$("#outputText").appendText(result.sessionList.list[i].list[j].contents);
-							$("#outputText").appendText("\n");
-						}
-						break;
-					}
-				}
-			}else{
-				alert("Error retrieving data");
-			}
-		});
-	});
 
-	//
-	// get and load data
-	//
+//
+//
+//
+//
+//
+function updateData(){
 	chrome.runtime.sendMessage({action: "GetData"}, function(result) {
-		console.log(result);
 		if(result !== undefined && result.sessionList !== undefined){
 			$("#sessionList").empty();
 			for(var i=0;i<result.sessionList.list.length;i++){
@@ -104,6 +74,42 @@ $(document).ready(function() {
 			alert("Error retrieving data");
 		}
 	});
+}
+
+
+
+$(document).ready(function() {
+	
+	$.fn.appendText = function(txt) {
+	   return this.each(function(){
+		   this.value += txt;
+	   });
+	};
+
+	$("#sessionList").change(function () {
+		$("#outputText").val('');
+		var s = $("#sessionList option:selected")[0].text;
+		chrome.runtime.sendMessage({action: "GetData"}, function(result) {
+			if(result !== undefined && result.sessionList !== undefined){
+				for(var i=0;i<result.sessionList.list.length;i++){
+					if(s === result.sessionList.list[i].name){
+						for(var j=0;j<result.sessionList.list[i].list.length;j++){
+							$("#outputText").appendText(result.sessionList.list[i].list[j].contents);
+							$("#outputText").appendText("\n");
+						}
+						break;
+					}
+				}
+			}else{
+				alert("Error retrieving data");
+			}
+		});
+	});
+
+	//
+	// get and load data
+	//
+	updateData();
 	
 	//
 	// TODO: load session list
@@ -118,6 +124,7 @@ $(document).ready(function() {
 		var name = prompt("New Session Name:", "Session_" + dateTimeNow());
 		if(name !== null){
 			chrome.runtime.sendMessage({action: "NewSession", sessionName: name}, function(response) {
+				updateData();
 			});
 		}
     });
@@ -160,6 +167,8 @@ $(document).ready(function() {
 						tabTitle: tabs[0].title, 
 						tabURL: tabs[0].url}, function(response) {
 							// TODO: debug
+							updateData();
+							$("#sessionList").change();
 					});
 				}else{
 					alert("No note specified");

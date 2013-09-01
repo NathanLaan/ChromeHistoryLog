@@ -17,9 +17,6 @@
         "notifications",
         "idle"
     ],
-    "omnibox": { 
-        "keyword" : "log" 
-    },
     "browser_action": {
         "default_icon": "script-small-16.png", 
         "default_title": "Chrome History Log",
@@ -27,9 +24,5 @@
     },
 	"background": {
 		"scripts": ["jquery-1.6.1.min.js", "util.js", "Session.js", "SessionList.js", "LogEntry.js", "background.js"]
-		/* , */
-		
-		/* http://developer.chrome.com/extensions/event_pages.html */
-		/* "persistent": false */
 	}
 }
