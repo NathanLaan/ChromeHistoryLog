@@ -56,13 +56,21 @@ $(document).ready(function() {
 		$("#outputText").val('');
 		var s = $("#sessionList option:selected")[0].text;
 		chrome.runtime.sendMessage({action: "GetData"}, function(result) {
+						console.log("-------GetData-------1-------");
 			if(result !== undefined && result.sessionList !== undefined){
+						console.log("-------GetData-------2-------");
 				for(var i=0;i<result.sessionList.list.length;i++){
+						console.log("-------GetData-------3-------");
+						console.log("s: " + s);
+						console.log("n: " + result.sessionList.list[i].name);
 					if(s === result.sessionList.list[i].name){
-						$("#outputText").appendText(result.sessionList.list[i].name);
-						$("#outputText").appendText("\n");
+						console.log("-------GetData-------4-------");
+						for(var j=0;j<result.sessionList.list[i].list.length;j++){
+							$("#outputText").appendText(result.sessionList.list[i].list[j].contents);
+							$("#outputText").appendText("\n");
+						}
+						break;
 					}
-					console.log("i: " + i);
 				}
 			}else{
 				alert("Error retrieving data");
