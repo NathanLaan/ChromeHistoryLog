@@ -54,7 +54,14 @@ function chlog_parseUrl( url ) {
 function updateData(){
 	chrome.runtime.sendMessage({action: "GetData"}, function(result) {
 		if(result !== undefined && result.sessionList !== undefined){
-			$("#sessionList").empty();
+
+console.log(result);
+
+			$('#sessionList')
+			    .find('option')
+			    .remove()
+			    .end();
+
 			for(var i=0;i<result.sessionList.list.length;i++){
 				if(result.sessionList.list[i].name === result.sessionList.currentSession){
 					$('#sessionList')
@@ -71,7 +78,10 @@ function updateData(){
 			// trigger the change() event to load the initial data
 			$("#sessionList").change();
 		}else{
-			alert("Error retrieving data");
+			//
+			// TODO: error handling. HOWEVER if there is no data yet we also end up here.
+			//
+			//alert("Error retrieving data");
 		}
 	});
 }
@@ -87,33 +97,37 @@ $(document).ready(function() {
 	};
 
 	$("#sessionList").change(function () {
+console.log("CHANGE()");
 		$("#outputText").val('');
-		var s = $("#sessionList option:selected")[0].text;
-		chrome.runtime.sendMessage({action: "GetData"}, function(result) {
-			if(result !== undefined && result.sessionList !== undefined){
-				for(var i=0;i<result.sessionList.list.length;i++){
-					if(s === result.sessionList.list[i].name){
-						for(var j=0;j<result.sessionList.list[i].list.length;j++){
-							$("#outputText").appendText(result.sessionList.list[i].list[j].contents);
-							$("#outputText").appendText("\n");
+		if($("#sessionList option:selected")[0] !== undefined){
+			//var s = $("#sessionList option:selected")[0].text;
+			chrome.runtime.sendMessage({action: "GetData"}, function(result) {
+				if(result !== undefined && result.sessionList !== undefined){
+					var s = result.sessionList.currentSession;
+					for(var i=0;i<result.sessionList.list.length;i++){
+						if(s === result.sessionList.list[i].name){
+							for(var j=0;j<result.sessionList.list[i].list.length;j++){
+console.log("s:" + s + " --- n:" + result.sessionList.list[i].name);
+								$("#outputText").appendText(result.sessionList.list[i].list[j].contents);
+								$("#outputText").appendText("\n");
+							}
+							break;
 						}
-						break;
 					}
+				}else{
+					//
+					// TODO: error handling. HOWEVER if there is no data yet we also end up here.
+					//
+					//alert("Error retrieving data");
 				}
-			}else{
-				alert("Error retrieving data");
-			}
-		});
+			});
+		}
 	});
 
 	//
 	// get and load data
 	//
 	updateData();
-	
-	//
-	// TODO: load session list
-	//
 
     $("#debugButton").click(function() {
 		chrome.runtime.sendMessage({action: "DEBUG"}, function(response) {
@@ -124,7 +138,17 @@ $(document).ready(function() {
 		var name = prompt("New Session Name:", "Session_" + dateTimeNow());
 		if(name !== null){
 			chrome.runtime.sendMessage({action: "NewSession", sessionName: name}, function(response) {
-				updateData();
+				//
+				// TODO: BUG: outputText is NOT clearing!!!
+				//
+				if(response.sessionCreated){
+					updateData();
+					$("#sessionList").change();
+				}else{
+					//
+					// TODO: debug
+					//
+				}
 			});
 		}
     });
@@ -138,19 +162,6 @@ $(document).ready(function() {
 		chrome.runtime.sendMessage({action: "StopSession"}, function(response) {
 		});
     });
-
-	/*
-	$("#getLogButton").click(function() {
-		chrome.runtime.sendMessage({action: "GetLogEntries"}, function(response) {
-			console.log("LEL");
-			console.log(response.logEntryList);
-			for(var i=0;i<response.logEntryList.length;i++){
-				$("#outputText").appendText(response.logEntryList[i]);
-				$("#outputText").appendText("\n");
-			}
-		});
-    });
-	*/
 
     $("#addNoteButton").click(function() {
 		//
@@ -179,9 +190,21 @@ $(document).ready(function() {
 
     $('#clearButton').click(function() {
     	if(confirm("Delete all ChromeHistoryLog data?")){
-	    	chrome.storage.local.clear(function(){
-	    		alert("Cleared!");
-	    	});
+			$('#sessionList')
+			    .find('option')
+			    .remove()
+			    .end();
+			$("#sessionList").change();
+
+			chrome.storage.local.remove("SessionListKey", function(){
+				updateData();
+				//alert("All HistoryLog data has been cleared.");
+			});
+
+	    	//chrome.storage.local.clear(function(){
+			//	updateData();
+				//alert("All HistoryLog data has been cleared.");
+	    	//});
 	    }
     });
 

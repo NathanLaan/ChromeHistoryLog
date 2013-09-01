@@ -54,7 +54,7 @@ function setEnabled(enabled){
 //
 //
 //
-function newSession(sessionName){
+function newSession(sessionName, sendResponse){
 	if(sessionName === null){
 		sessionName = "Session_" + dateTimeNow();
 	}
@@ -79,15 +79,19 @@ function newSession(sessionName){
 			}else{
 				var session = new Session();
 				session.name = sessionName;
+				sessionList.loggingEnabled = false;
 				sessionList.currentSession = sessionName;
+console.log(">>>CUR: " + sessionList.currentSession);
 				sessionList.list[sessionList.list.length] = session;
 				chrome.storage.local.set({'SessionListKey':sessionList},function(){
 					console.log("-------newSession()--SET-------");
 					console.log(sessionList);
+					sendResponse({sessionCreated: true});
 				});
 			}
 		}else{
 			// TODO: debug
+			sendResponse({sessionCreated: false});
 		}
 	});
 }
@@ -119,8 +123,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		setEnabled(false);
 	}
 	if(request.action == "NewSession"){
-		setEnabled(false);
-		newSession(request.sessionName);
+		newSession(request.sessionName, sendResponse);
 	}
 	if(request.action == "AddNote"){
 	    chrome.tabs.query({'active': true, 'currentWindow':true}, function(tabs) {
@@ -153,7 +156,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				//
 				// TODO: need to handle error messages on the other end
 				//
-				sendReponse({errorMessage: "List not found"});
+				sendResponse({errorMessage: "List not found"});
 			}
 		});
 	}
@@ -237,43 +240,3 @@ function log(tab, tabID, status, message){
 chrome.tabs.onUpdated.addListener(function(tabID, changeInfo, tab){
 	log(tab, tabID, changeInfo.status, "");
 });
-
-
-//
-//
-//
-//
-//
-function addLogEntry(currentSession, logEntry){
-	chrome.storage.local.get('SessionList', function(result){
-		//console.log("LoggingEnabled: " + result.SessionList);
-		
-		// create the session list.
-		// if the get return NULL, we now have a default list.
-		var sessionList = new Array();
-		
-		if(result.SessionList !== null){
-			sessionList = result.SessionList;
-
-			//
-			// should never happen...
-			//
-			if(sessionList[currentSession] === null){
-				console.log("--addLogEntry()--sessionList[currentSession]--NULL--");
-				sessionList[currentSession] = new Array();
-			}
-			var logEntryList = sessionList[currentSession];
-			logEntryList[logEntryList.length] = logEntry;
-			sessionList[currentSession] = logEntryList;
-			
-			chrome.storage.local.set({'SessionList':sessionList},function(){
-				// TODO: debug
-			});
-			
-			console.log('--addLogEntry()--sessionList--');
-			console.log(sessionList);
-		}else{
-			// TODO: something bad has happened, no session list...
-		}
-	});
-}
