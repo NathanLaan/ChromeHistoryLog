@@ -21,6 +21,7 @@ chrome.storage.local.get('SessionListKey', function(result){
 			console.log(sessionList);
 		});
 	}
+	toggleIcon();
 });
 
 
@@ -42,6 +43,24 @@ function setEnabled(enabled){
 				console.log("-------setEnabled()--SET-------");
 				console.log(sessionList);
 			});
+		}else{
+			// TODO: debug
+		}
+		toggleIcon();
+	});
+}
+
+
+
+function toggleIcon(){
+	chrome.storage.local.get('SessionListKey', function(result){
+		if(result.SessionListKey !== undefined){
+			var sessionList = result.SessionListKey;
+			if(sessionList.loggingEnabled){
+				chrome.browserAction.setIcon({'path':'script-import.png'});
+			}else{
+				chrome.browserAction.setIcon({'path':'script-small-16.png'});
+			}
 		}else{
 			// TODO: debug
 		}
@@ -88,6 +107,7 @@ console.log(">>>CUR: " + sessionList.currentSession);
 					console.log(sessionList);
 					sendResponse({sessionCreated: true});
 				});
+				toggleIcon();
 			}
 		}else{
 			// TODO: debug

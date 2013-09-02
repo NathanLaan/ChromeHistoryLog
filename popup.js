@@ -97,7 +97,6 @@ $(document).ready(function() {
 	};
 
 	$("#sessionList").change(function () {
-console.log("CHANGE()");
 		$("#outputText").val('');
 		if($("#sessionList option:selected")[0] !== undefined){
 			//var s = $("#sessionList option:selected")[0].text;
@@ -107,7 +106,6 @@ console.log("CHANGE()");
 					for(var i=0;i<result.sessionList.list.length;i++){
 						if(s === result.sessionList.list[i].name){
 							for(var j=0;j<result.sessionList.list[i].list.length;j++){
-console.log("s:" + s + " --- n:" + result.sessionList.list[i].name);
 								$("#outputText").appendText(result.sessionList.list[i].list[j].contents);
 								$("#outputText").appendText("\n");
 							}
