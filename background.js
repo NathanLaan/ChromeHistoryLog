@@ -8,20 +8,30 @@
 //
 // INITIALIZATION
 //
-chrome.storage.local.get('SessionListKey', function(result){	
-	console.log("-------INITIALIZATION--result-------");
-	console.log(result);
-	
-	if(result.SessionListKey === undefined){
-		console.log("-------INITIALIZATION--undefined-------");
-		var sessionList = new SessionList();
-		console.log(sessionList);
-		chrome.storage.local.set({'SessionListKey':sessionList},function(){
-			console.log("-------INITIALIZATION--SET-------");
+function init(callback){
+	chrome.storage.local.get('SessionListKey', function(result){	
+		console.log("-------INITIALIZATION--result-------");
+		console.log(result);
+		
+		if(result.SessionListKey === undefined){
+			console.log("-------INITIALIZATION--undefined-------");
+			var sessionList = new SessionList();
 			console.log(sessionList);
-		});
-	}
-	toggleIcon();
+			chrome.storage.local.set({'SessionListKey':sessionList},function(){
+				console.log("-------INITIALIZATION--SET-------");
+				console.log(sessionList);
+				toggleIcon(function(){
+					if(callback){
+						callback();
+					}
+				});
+			});
+		}
+	});
+}
+
+init(function(){
+	console.log("-------INITIALIZATION-COMPLETE-------");
 });
 
 
@@ -41,18 +51,17 @@ function setEnabled(enabled){
 			sessionList.loggingEnabled = enabled;
 			chrome.storage.local.set({'SessionListKey':sessionList},function(){
 				console.log("-------setEnabled()--SET-------");
-				console.log(sessionList);
+				toggleIcon();
 			});
 		}else{
 			// TODO: debug
 		}
-		toggleIcon();
 	});
 }
 
 
 
-function toggleIcon(){
+function toggleIcon(callback){
 	chrome.storage.local.get('SessionListKey', function(result){
 		if(result.SessionListKey !== undefined){
 			var sessionList = result.SessionListKey;
@@ -61,6 +70,9 @@ function toggleIcon(){
 				chrome.browserAction.setIcon({'path':'record-16x16.png'});
 			}else{
 				chrome.browserAction.setIcon({'path':'script-small-16.png'});
+			}
+			if(callback){
+				callback();
 			}
 		}else{
 			// TODO: debug
@@ -106,9 +118,9 @@ console.log(">>>CUR: " + sessionList.currentSession);
 				chrome.storage.local.set({'SessionListKey':sessionList},function(){
 					console.log("-------newSession()--SET-------");
 					console.log(sessionList);
+					toggleIcon();
 					sendResponse({sessionCreated: true});
 				});
-				toggleIcon();
 			}
 		}else{
 			// TODO: debug
@@ -182,6 +194,21 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 				sendResponse({errorMessage: "List not found"});
 			}
 		});
+	}
+	if(request.action === "ClearData"){
+		chrome.runtime.sendMessage({action: "StopSession"}, function(response) {
+			chrome.storage.local.remove("SessionListKey", function(){
+				console.log("-------ClearData-------");
+				init(function(){
+					sendResponse({message: "All HistoryLog data has been cleared."});
+				});
+			});
+	    	//chrome.storage.local.clear(function(){
+			//	updateData();
+				//alert("All HistoryLog data has been cleared.");
+	    	//});
+		});
+
 	}
 	
 	return true;

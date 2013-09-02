@@ -207,24 +207,18 @@ $(document).ready(function() {
 
     $('#clearButton').click(function() {
     	if(confirm("Delete all ChromeHistoryLog data?")){
-			chrome.runtime.sendMessage({action: "StopSession"}, function(response) {
+
+			chrome.runtime.sendMessage({action: "ClearData"}, function(response) {
 				$('#sessionList')
 				    .find('option')
 				    .remove()
 				    .end();
 				$("#sessionList").change();
-
-				chrome.storage.local.remove("SessionListKey", function(){
-					updateData();
-					console.log("All HistoryLog data has been cleared.");
-					//alert("All HistoryLog data has been cleared.");
-				});
-
-		    	//chrome.storage.local.clear(function(){
-				//	updateData();
-					//alert("All HistoryLog data has been cleared.");
-		    	//});
+				alert("done");
+				
+				updateData();
 			});
+
 	    }
     });
 
