@@ -54,9 +54,6 @@ function chlog_parseUrl( url ) {
 function updateData(){
 	chrome.runtime.sendMessage({action: "GetData"}, function(result) {
 		if(result !== undefined && result.sessionList !== undefined){
-
-console.log(result);
-
 			$('#sessionList')
 			    .find('option')
 			    .remove()
@@ -102,6 +99,11 @@ console.log(result);
 
 
 
+//
+//
+//
+//
+//
 $(document).ready(function() {
 	
 	$.fn.appendText = function(txt) {
@@ -113,7 +115,6 @@ $(document).ready(function() {
 	//
 	// Load initial UI state
 	//
-
 
 	$("#sessionList").change(function () {
 		$("#outputText").val('');
@@ -160,7 +161,7 @@ $(document).ready(function() {
 				//
 				if(response.sessionCreated){
 					updateData();
-					$("#sessionList").change();
+					//$("#sessionList").change();
 				}else{
 					//
 					// TODO: debug

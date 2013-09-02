@@ -5,20 +5,20 @@
 //
 
 
+
 //
 // INITIALIZATION
 //
 function init(callback){
 	chrome.storage.local.get('SessionListKey', function(result){	
-		console.log("-------INITIALIZATION--result-------");
+		console.log("-------INIT-------");
 		console.log(result);
-		
 		if(result.SessionListKey === undefined){
-			console.log("-------INITIALIZATION--undefined-------");
+			console.log("-------INIT--undefined-------");
 			var sessionList = new SessionList();
 			console.log(sessionList);
 			chrome.storage.local.set({'SessionListKey':sessionList},function(){
-				console.log("-------INITIALIZATION--SET-------");
+				console.log("-------INIT--SET-------");
 				console.log(sessionList);
 				toggleIcon(function(){
 					if(callback){
@@ -42,15 +42,11 @@ init(function(){
 //
 //
 function setEnabled(enabled){
-	chrome.storage.local.get('SessionListKey', function(result){	
-		console.log("-------setEnabled()--GET-------");
-		console.log(result);
-		
+	chrome.storage.local.get('SessionListKey', function(result){
 		if(result.SessionListKey !== undefined){
 			var sessionList = result.SessionListKey;
 			sessionList.loggingEnabled = enabled;
 			chrome.storage.local.set({'SessionListKey':sessionList},function(){
-				console.log("-------setEnabled()--SET-------");
 				toggleIcon();
 			});
 		}else{
@@ -81,6 +77,7 @@ function toggleIcon(callback){
 }
 
 
+
 //
 //
 //
@@ -106,18 +103,15 @@ function newSession(sessionName, sendResponse){
 				//
 				// TODO: need to handle error condition and notify user...
 				//
-				console.log("-------DUPLICATE-SESSION-NAME-------")
+				console.log("-------DUPLICATE-SESSION-NAME-------");
 				return false;
 			}else{
 				var session = new Session();
 				session.name = sessionName;
 				sessionList.loggingEnabled = false;
 				sessionList.currentSession = sessionName;
-console.log(">>>CUR: " + sessionList.currentSession);
 				sessionList.list[sessionList.list.length] = session;
 				chrome.storage.local.set({'SessionListKey':sessionList},function(){
-					console.log("-------newSession()--SET-------");
-					console.log(sessionList);
 					toggleIcon();
 					sendResponse({sessionCreated: true});
 				});
@@ -128,6 +122,7 @@ console.log(">>>CUR: " + sessionList.currentSession);
 		}
 	});
 }
+
 
 
 //
@@ -141,7 +136,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		+ (sender.tab ? "Content Script: " + sender.tab.url : "Extension")
 		+ "  ACTION: " + (request.action == null ?  + "null" : request.action));
 
-	
 	if(request.action == "DEBUG"){
 		chrome.storage.local.get('SessionListKey', function(result){	
 			console.log("-------DEBUG-------");
@@ -184,7 +178,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	if(request.action === "GetData"){
 		chrome.storage.local.get('SessionListKey', function(result){
 			if(result.SessionListKey !== undefined){
-				console.log("-------GetData()--GOOD-------");
 				sendResponse({sessionList: result.SessionListKey});
 			}else{
 				console.log("-------GetData()--ERROR:List-Not-Found-------");
@@ -196,6 +189,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 		});
 	}
 	if(request.action === "ClearData"){
+				console.log("-------ClearData-------");
 		chrome.runtime.sendMessage({action: "StopSession"}, function(response) {
 			chrome.storage.local.remove("SessionListKey", function(){
 				console.log("-------ClearData-------");
@@ -228,7 +222,6 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 
 
 
-
 //
 //
 //
@@ -240,7 +233,6 @@ function log(tab, tabID, status, message){
 		if(result.SessionListKey !== undefined){
 			var sessionList = result.SessionListKey;
 			if(sessionList.loggingEnabled){
-				//console.log("-------onUpdated()--LoggingEnabled-------");
 				var logEntry = new LogEntry();
 				logEntry.contents = "DATETIME=" + dateTimeNow();
 				logEntry.contents += ", TAB=" + tabID;
@@ -259,7 +251,6 @@ function log(tab, tabID, status, message){
 				for(var i=0;i<sessionList.list.length;i++){
 					if(sessionList.list[i] !== undefined){
 						if(sessionList.list[i].name === sessionList.currentSession){
-							//console.log("-------onUpdated()--FOUND-------");
 							sessionList.list[i].list[sessionList.list[i].list.length] = logEntry;
 							break;
 						}
@@ -267,12 +258,10 @@ function log(tab, tabID, status, message){
 				}
 
 				chrome.storage.local.set({'SessionListKey':sessionList},function(){
-					//console.log("-------onUpdated()--SET-------");
-					console.log(result);
 				});
-
 			}
 		}else{
+			console.log("-------LOG()-SessionListKey-UNDEFINED-------");
 			//
 			// TODO: error handling
 			//
