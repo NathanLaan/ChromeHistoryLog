@@ -57,7 +57,8 @@ function toggleIcon(){
 		if(result.SessionListKey !== undefined){
 			var sessionList = result.SessionListKey;
 			if(sessionList.loggingEnabled){
-				chrome.browserAction.setIcon({'path':'script-import.png'});
+				//chrome.browserAction.setIcon({'path':'script-import.png'});
+				chrome.browserAction.setIcon({'path':'record-16x16.png'});
 			}else{
 				chrome.browserAction.setIcon({'path':'script-small-16.png'});
 			}
@@ -138,9 +139,11 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 	}
 	if(request.action == "StartSession"){
 		setEnabled(true);
+		sendResponse({message: "Session started."});
 	}
 	if(request.action == "StopSession"){
 		setEnabled(false);
+		sendResponse({message: "Session stopped."});
 	}
 	if(request.action == "NewSession"){
 		newSession(request.sessionName, sendResponse);

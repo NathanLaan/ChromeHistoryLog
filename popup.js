@@ -62,6 +62,20 @@ console.log(result);
 			    .remove()
 			    .end();
 
+			if( result.sessionList.list.length < 1){
+				$('#sessionList').attr('disabled','disabled');
+				$('#startSessionButton').attr('disabled','disabled');
+				$('#stopSessionButton').attr('disabled','disabled');
+				$('#addNoteButton').attr('disabled','disabled');
+				$('#deleteSessionButton').attr('disabled','disabled');
+			}else{
+				$('#sessionList').removeAttr('disabled');
+				$('#startSessionButton').removeAttr('disabled');
+				$('#stopSessionButton').removeAttr('disabled');
+				$('#addNoteButton').removeAttr('disabled');
+				$('#deleteSessionButton').removeAttr('disabled');
+			}
+
 			for(var i=0;i<result.sessionList.list.length;i++){
 				if(result.sessionList.list[i].name === result.sessionList.currentSession){
 					$('#sessionList')
@@ -95,6 +109,11 @@ $(document).ready(function() {
 		   this.value += txt;
 	   });
 	};
+
+	//
+	// Load initial UI state
+	//
+
 
 	$("#sessionList").change(function () {
 		$("#outputText").val('');
@@ -188,21 +207,24 @@ $(document).ready(function() {
 
     $('#clearButton').click(function() {
     	if(confirm("Delete all ChromeHistoryLog data?")){
-			$('#sessionList')
-			    .find('option')
-			    .remove()
-			    .end();
-			$("#sessionList").change();
+			chrome.runtime.sendMessage({action: "StopSession"}, function(response) {
+				$('#sessionList')
+				    .find('option')
+				    .remove()
+				    .end();
+				$("#sessionList").change();
 
-			chrome.storage.local.remove("SessionListKey", function(){
-				updateData();
-				//alert("All HistoryLog data has been cleared.");
+				chrome.storage.local.remove("SessionListKey", function(){
+					updateData();
+					console.log("All HistoryLog data has been cleared.");
+					//alert("All HistoryLog data has been cleared.");
+				});
+
+		    	//chrome.storage.local.clear(function(){
+				//	updateData();
+					//alert("All HistoryLog data has been cleared.");
+		    	//});
 			});
-
-	    	//chrome.storage.local.clear(function(){
-			//	updateData();
-				//alert("All HistoryLog data has been cleared.");
-	    	//});
 	    }
     });
 
