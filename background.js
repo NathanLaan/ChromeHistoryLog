@@ -234,16 +234,14 @@ function log(tab, tabID, status, message){
 			var sessionList = result.SessionListKey;
 			if(sessionList.loggingEnabled){
 				var logEntry = new LogEntry();
-				logEntry.contents = "DATETIME=" + dateTimeNow();
-				logEntry.contents += ", TAB=" + tabID;
+				logEntry.contents = "DATETIME=" + dateTimeNow() + ", TAB=" + tabID;
 				if(tab !== undefined){
-					logEntry.contents += ", TITLE=" + tab.title;
-					logEntry.contents += ", URL=" + tab.url;
+					logEntry.contents += ", TITLE=" + tab.title + ", URL=" + tab.url;
 				}
-				if(status !== undefined){
+				if(status !== undefined && status !== ""){
 					logEntry.contents += ", STATUS=" + status;
 				}
-				if(message !== undefined){
+				if(message !== undefined && message !== ""){
 					logEntry.contents += ", NOTE=" + message;
 				}
 

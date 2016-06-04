@@ -51,21 +51,21 @@ function chlog_parseUrl( url ) {
 //
 //
 //
-function updateData(){
+function updateData() {
 	chrome.runtime.sendMessage({action: "GetData"}, function(result) {
-		if(result !== undefined && result.sessionList !== undefined){
+		if(result !== undefined && result.sessionList !== undefined) {
 			$('#sessionList')
 			    .find('option')
 			    .remove()
 			    .end();
 
-			if( result.sessionList.list.length < 1){
+			if( result.sessionList.list.length < 1) {
 				$('#sessionList').attr('disabled','disabled');
 				$('#startSessionButton').attr('disabled','disabled');
 				$('#stopSessionButton').attr('disabled','disabled');
 				$('#addNoteButton').attr('disabled','disabled');
 				$('#deleteSessionButton').attr('disabled','disabled');
-			}else{
+			} else {
 				$('#sessionList').removeAttr('disabled');
 				$('#startSessionButton').removeAttr('disabled');
 				$('#stopSessionButton').removeAttr('disabled');
@@ -79,7 +79,7 @@ function updateData(){
 						.append($("<option selected></option>")
 						.attr("value",result.sessionList.list[i].name)
 						.text(result.sessionList.list[i].name));
-				}else{
+				} else {
 					$('#sessionList')
 						.append($("<option></option>")
 						.attr("value",result.sessionList.list[i].name)
@@ -88,7 +88,7 @@ function updateData(){
 			}
 			// trigger the change() event to load the initial data
 			$("#sessionList").change();
-		}else{
+		} else {
 			//
 			// TODO: error handling. HOWEVER if there is no data yet we also end up here.
 			//
@@ -107,7 +107,7 @@ function updateData(){
 $(document).ready(function() {
 	
 	$.fn.appendText = function(txt) {
-	   return this.each(function(){
+	   return this.each(function() {
 		   this.value += txt;
 	   });
 	};
