@@ -66,6 +66,7 @@ audio:not([controls]) {
 }
 
 html {
+  margin: 15px;
   font-size: 100%;
   -webkit-text-size-adjust: 100%;
       -ms-text-size-adjust: 100%;

@@ -6,17 +6,23 @@
 <body>
 	<div id="popup">
     <a href="#" id="newSessionButton" class="btn btn-primary">New Session</a>
-    <a href="#" id="startSessionButton" class="btn btn-success">Start Logging</a>
-	<a href="#" id="stopSessionButton" class="btn btn-warning">Stop Logging</a>
+    <a href="#" id="deleteSessionButton" class="btn btn-danger">Delete Session</a>
+    <a href="#" id="clearButton" class="btn btn-danger">Clear All Data</a>
 	<br/>
     <br/>
 	<select class="span10" id="sessionList" style="width:100%"></select>
+    <br/>
+    <br/>
+    <a href="#" id="startSessionButton" class="btn btn-success">Start Logging</a>
+	<a href="#" id="stopSessionButton" class="btn btn-warning">Stop Logging</a>
     <a href="#" id="addNoteButton" class="btn btn-info">Add Note</a>
-    <a href="#" id="deleteSessionButton" class="btn btn-danger">Delete Session</a>
-    <a href="#" id="clearButton" class="btn btn-danger">Clear All Data</a>
-	<br/><textarea class="span10" id="outputText" cols="100" rows="20" wrap="off" readonly></textarea>
+	<br/>
+    <br/>
+    <textarea class="span10" id="outputText" cols="100" rows="16" wrap="off" readonly></textarea>
     <!--<br/><a href="#" id="debugButton" class="btn btn-info">DEBUG</a>-->
-	</div>
+	<br/>
+    <br/>
+    </div>
 	<script src='jquery-1.6.1.min.js'></script>
     <script src='popup.js'></script>
 </body>
